@@ -25,9 +25,9 @@ def reconnect():
     if conn and conn.closed == 0:
         return
     conn = psycopg2.connect(dbname='postgres',
-                            user='postgres.ajfdxbdhabbkupdltrjt',
+                            user='postgres',
                             password='QkpEcj6XVEf_!P#',
-                            host='aws-0-ap-southeast-1.pooler.supabase.com')
+                            host='semantic-search-instance-1.cp08uyqy8k6k.ap-south-1.rds.amazonaws.com')
 
 async def get_embedding(text: str, model='text-embedding-3-small'):
     res = await client.embeddings.create(input = text, model=model)
@@ -363,15 +363,18 @@ async def search_by_voice(audiofile: UploadFile= File(...)):
 # Endpoint to get credentials by website
 @app.get("/credentials/{website}")
 def get_credentials(website: str):
-    reconnect()
-    cursor = conn.cursor()
-    cursor.execute("SELECT url, username, password FROM emails WHERE username NOT LIKE 'Password:%%' AND url LIKE %s", (f"%{website}%",))
-    result = cursor.fetchall()
-    cursor.close()
-    conn.close()
-    if not result:
-        raise HTTPException(status_code=404, detail="Credentials not found")
-    return result
+    try:
+        reconnect()
+        cursor = conn.cursor()
+        cursor.execute("SELECT url, username, password FROM emails WHERE username NOT LIKE 'Password:%%' AND url LIKE %s", (f"%{website}%",))
+        result = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        if not result:
+            raise HTTPException(status_code=404, detail="Credentials not found")
+        return result
+    except Exception as err:
+        raise HTTPException(status_code=400, detail=str(err))
 
 if __name__ == "__main__":
     import uvicorn

@@ -3,4 +3,5 @@ psycopg2-binary
 fastapi
 python-dotenv
 tiktoken
-uvicorn
+uvicorn[standard]
+gunicorn
