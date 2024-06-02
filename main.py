@@ -25,9 +25,9 @@ def reconnect():
     if conn and conn.closed == 0:
         return
     conn = psycopg2.connect(dbname='postgres',
-                            user='postgres',
+                            user='postgres.ajfdxbdhabbkupdltrjt',
                             password='QkpEcj6XVEf_!P#',
-                            host='semantic-search-instance-1.cp08uyqy8k6k.ap-south-1.rds.amazonaws.com')
+                            host='aws-0-ap-southeast-1.pooler.supabase.com')
 
 async def get_embedding(text: str, model='text-embedding-3-small'):
     res = await client.embeddings.create(input = text, model=model)
