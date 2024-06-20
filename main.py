@@ -183,18 +183,19 @@ res = {}
 
 
 async def match(product_id: int, chunk: str, keyword: str):
-    response = await client.chat.completions.create(
-        temperature=0,
-        model="gpt-3.5-turbo-1106",
-        messages=[
-            {
-                "role": "system",
-                "content": f"You are 0/1 classifier. If the following chunks doesn't match the search keyword '{keyword}' or has negative meaning from it, output 0. Otherwise, 1. Output 0 or 1 only. No descriptions.\n\n{chunk}",
-            },
-        ],
-    )
+    # response = await client.chat.completions.create(
+    #     temperature=0,
+    #     model="gpt-3.5-turbo-1106",
+    #     messages=[
+    #         {
+    #             "role": "system",
+    #             "content": f"You are 0/1 classifier. If the following chunks doesn't match the search keyword '{keyword}' or has negative meaning from it, output 0. Otherwise, 1. Output 0 or 1 only. No descriptions.\n\n{chunk}",
+    #         },
+    #     ],
+    # )
     # print(response.choices[0].message.content, keyword, product_id, chunk)
-    return product_id if response.choices[0].message.content == "1" else 0
+    # return product_id if response.choices[0].message.content == "1" else 0
+    return product_id
 
 
 async def enrich(keyword: str):
@@ -278,7 +279,7 @@ async def pre_search(keyword: str):
     cur = conn.cursor()
     # Get the top 30 most similar documents using the KNN <=> operator
     cur.execute(
-        f"SELECT product_id, chunk FROM embeddings WHERE chunk LIKE %s LIMIT 20",
+        f"SELECT product_id, chunk FROM embeddings WHERE chunk LIKE %s LIMIT 100",
         ("%".join(keys),),
     )
     products = cur.fetchall()
@@ -299,7 +300,7 @@ async def search(keyword: str):
     pre_ids = await pre_search(keyword)
     keyword = await enrich(keyword)
     keys = keyword.split("\n")
-    count = (20 - len(pre_ids)) // len(keys)
+    count = (100 - len(pre_ids)) // len(keys)
     products = await asyncio.gather(
         *[get_products(key, count, pre_ids) for key in keys]
     )
