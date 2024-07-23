@@ -28,9 +28,9 @@ def reconnect():
         return
     conn = psycopg2.connect(
         dbname="postgres",
-        user="postgres.ajfdxbdhabbkupdltrjt",
-        password="QkpEcj6XVEf_!P#",
-        host="aws-0-ap-southeast-1.pooler.supabase.com",
+        user="postgres.ahrzdffygbhkuyfcqjcw",
+        password="Ihateara!!!",
+        host="aws-0-ap-south-1.pooler.supabase.com",
     )
 
 
